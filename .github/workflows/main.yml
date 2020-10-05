@@ -48,3 +48,28 @@ jobs:
           repository: p1chkn/flask-app
           tag_with_ref: true
 
+  deploy:
+    runs_on: ubuntu-latest
+    needs: build_and_push_to_docker_hur
+    steps:
+      - name: executing remote ssh commands to deploy
+        users: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            sudo docker pull p1chkn/flask-app
+            sudo docker stop $(sudo docker ps -a -q)
+            sudo docker run --rm -d -p 5000:5000 p1chkn/flask-app
+  
+  send_message:
+    runs-on: ubuntu-latest
+    needs: deploy 
+    steps:
+      - name: send message
+        users: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: ${{ github.workflow }} успешно выполнен!
