@@ -43,8 +43,8 @@ jobs:
       - name: Push to Docker Hub
         uses: docker/build-push-action@v1
         with:
-          username: ${{ secret.DOCKER_USRNAME }}
-          password: ${{ secret.DOCKER_PASSWORD }}
+          username: ${{ secrets.DOCKER_USRNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
           repository: p1chkn/flask-app
           tag_with_ref: true
 
